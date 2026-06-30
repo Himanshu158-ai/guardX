@@ -1,10 +1,28 @@
 import MemoryStore from "../src/store/memoryStore.js";
+import { fixedWindow } from "../src/algorithms/fixedWindow.js";
 
 const store = new MemoryStore();
 
-store.set("127.0.0.1", {
-    count: 1,
-    resetAt: Date.now() + 60000
-});
+const config = {
+    store,
+    key: "127.0.0.1",
+    limit: 5,
+    windowMs: 3000
+};
 
-console.log(store.get("127.0.0.1"));
+for (let i = 1; i <= 5; i++) {
+    console.log(fixedWindow(config));
+}
+
+
+console.log("\nWaiting 4 seconds...\n");
+
+await sleep(4000);
+
+
+console.log(fixedWindow(config));
+
+
+async function sleep(ms) {
+    await new Promise(resolve => setTimeout(resolve, ms));
+}
