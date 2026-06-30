@@ -1,21 +1,27 @@
 {
-  "name": "Rate-limiter",
+  "name": "guardx-rate-limit",
   "version": "0.1.0",
-  "description": "Fast and lightweight rate limiter middleware for Node.js",
-  "main": "src/index.js",
+  "description": "A lightweight and customizable Express rate limiting middleware.",
+  "type": "module",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "node playground/run.js"
+  },
   "keywords": [
     "rate-limit",
+    "rate-limiter",
     "express",
     "middleware",
-    "security",
-    "node"
+    "node",
+    "guardx"
   ],
   "license": "MIT",
-  "type": "module",
-  "scripts": {
-    "dev": "nodemon examples/express/server.js"
+  "engines": {
+    "node": ">=18"
   },
-  "dependencies": {
-    "express": "^5.2.1"
-  }
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ]
 }
