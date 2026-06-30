@@ -5,7 +5,8 @@ const ALLOWED_OPTIONS = new Set([
     "limit",
     "windowMs",
     "headers",
-    "message"
+    "message",
+    "store"
 ]);
 
 
@@ -36,6 +37,8 @@ function validateOptions(options = {}) {
     validateBoolean(config.headers, "headers");
 
     validateString(config.message, "message");
+
+    validateStore(config.store);
 
     return config;
 
@@ -75,6 +78,33 @@ function validateString(value, field) {
         throw new GuardXError(
             `"${field}" must be a string.`
         );
+
+    }
+
+}
+
+
+function validateStore(store) {
+
+    if (store == null) return;
+
+    const requiredMethods = [
+        "get",
+        "set",
+        "has",
+        "delete",
+        "clear"
+    ];
+
+    for (const method of requiredMethods) {
+
+        if (typeof store[method] !== "function") {
+
+            throw new GuardXError(
+                `Store must implement "${method}()" method.`
+            );
+
+        }
 
     }
 
