@@ -1,15 +1,23 @@
-# GuardX
+# GuardX 🚀
 
-A lightweight and customizable Express rate limiting middleware.
+A lightweight, modular, and extensible Express rate limiter built with clean architecture.
+
+GuardX focuses on simplicity, performance, and future extensibility while keeping the public API stable.
+
+---
 
 ## Features
 
-- 🚀 Easy to use
-- ⚡ Fast in-memory storage
-- 🔒 Fixed Window rate limiting
-- 🛠️ Custom store support
-- ✅ Zero dependencies
-- 📦 ESM Support
+- ✅ Fixed Window Algorithm
+- ✅ In-Memory Store
+- ✅ Custom Store Support
+- ✅ Standard RateLimit Headers
+- ✅ Retry-After Header
+- ✅ Custom Response Handler
+- ✅ Configuration Validation
+- ✅ Lightweight & Zero Dependencies
+
+---
 
 ## Installation
 
@@ -17,9 +25,11 @@ A lightweight and customizable Express rate limiting middleware.
 npm install guardx-rate-limit
 ```
 
+---
+
 ## Basic Usage
 
-```javascript
+```js
 import express from "express";
 import guardx from "guardx-rate-limit";
 
@@ -33,43 +43,93 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-    res.send("Hello World");
+    res.json({
+        success: true
+    });
 });
 
 app.listen(3000);
 ```
 
-## Options
+---
+
+## Standard Headers
+
+Enable HTTP RateLimit headers.
+
+```js
+guardx({
+    standardHeaders: true
+});
+```
+
+Example:
+
+```
+RateLimit-Limit: 100
+RateLimit-Remaining: 99
+RateLimit-Reset: 58
+Retry-After: 58
+```
+
+---
+
+## Custom Handler
+
+```js
+guardx({
+    handler(req, res, info) {
+
+        return res.status(429).json({
+            success: false,
+            message: "Rate limit exceeded",
+            retryAfter: info.retryAfter,
+            remaining: info.remaining,
+            limit: info.limit
+        });
+
+    }
+});
+```
+
+---
+
+## Available Options
 
 | Option | Type | Default |
 |--------|------|---------|
 | limit | number | 100 |
 | windowMs | number | 60000 |
-| headers | boolean | true |
-| message | string | "Too many requests." |
-| store | Custom Store | MemoryStore |
+| message | string | Too many requests. |
+| standardHeaders | boolean | true |
+| handler | function | undefined |
+| store | Store | MemoryStore |
 
-## Custom Store
+---
 
-```javascript
-import { MemoryStore } from "guardx";
+## Handler Info
 
-const store = new MemoryStore();
+| Property | Description |
+|----------|-------------|
+| limit | Configured request limit |
+| totalHits | Current request count |
+| remaining | Remaining requests |
+| resetAt | Window reset timestamp |
+| retryAfter | Seconds until reset |
 
-app.use(
-    guardx({
-        store
-    })
-);
-```
+---
 
-## Response
+## Roadmap
 
-```json
-{
-    "message": "Too many requests."
-}
-```
+- ✅ Fixed Window
+- ✅ Memory Store
+- ✅ Standard Headers
+- ✅ Custom Handler
+- 🔜 Redis Store
+- 🔜 Sliding Window
+- 🔜 Token Bucket
+
+---
 
 ## License
 
