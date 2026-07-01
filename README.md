@@ -1,33 +1,39 @@
 # GuardX 🚀
 
-A lightweight, modular, and extensible Express rate limiter built with clean architecture.
+A lightweight, modular, and production-ready Express rate limiter built with clean architecture.
 
-GuardX focuses on simplicity, performance, and future extensibility while keeping the public API stable.
+GuardX focuses on simplicity, performance, extensibility, and a stable public API while supporting multiple storage backends.
 
 ---
 
-## Features
+# Features
 
 - ✅ Fixed Window Algorithm
 - ✅ In-Memory Store
-- ✅ Custom Store Support
+- ✅ Redis Store
 - ✅ Standard RateLimit Headers
 - ✅ Retry-After Header
 - ✅ Custom Response Handler
 - ✅ Configuration Validation
-- ✅ Lightweight & Zero Dependencies
+- ✅ Lightweight
 
 ---
 
-## Installation
+# Installation
 
 ```bash
 npm install guardx-rate-limit
 ```
 
+For Redis support:
+
+```bash
+npm install redis
+```
+
 ---
 
-## Basic Usage
+# Basic Usage
 
 ```js
 import express from "express";
@@ -53,7 +59,29 @@ app.listen(3000);
 
 ---
 
-## Standard Headers
+# Redis Store
+
+```js
+import express from "express";
+import { createClient } from "redis";
+import guardx, { RedisStore } from "guardx-rate-limit";
+
+const client = createClient();
+
+await client.connect();
+
+app.use(
+    guardx({
+        limit: 100,
+        windowMs: 60 * 1000,
+        store: new RedisStore(client)
+    })
+);
+```
+
+---
+
+# Standard Headers
 
 Enable HTTP RateLimit headers.
 
@@ -63,7 +91,7 @@ guardx({
 });
 ```
 
-Example:
+Example
 
 ```
 RateLimit-Limit: 100
@@ -74,7 +102,7 @@ Retry-After: 58
 
 ---
 
-## Custom Handler
+# Custom Handler
 
 ```js
 guardx({
@@ -94,10 +122,10 @@ guardx({
 
 ---
 
-## Available Options
+# Available Options
 
 | Option | Type | Default |
-|--------|------|---------|
+|---------|------|---------|
 | limit | number | 100 |
 | windowMs | number | 60000 |
 | message | string | Too many requests. |
@@ -107,7 +135,7 @@ guardx({
 
 ---
 
-## Handler Info
+# Handler Info
 
 | Property | Description |
 |----------|-------------|
@@ -119,18 +147,48 @@ guardx({
 
 ---
 
-## Roadmap
+# Built-in Stores
 
-- ✅ Fixed Window
-- ✅ Memory Store
-- ✅ Standard Headers
-- ✅ Custom Handler
-- 🔜 Redis Store
-- 🔜 Sliding Window
-- 🔜 Token Bucket
+## MemoryStore
+
+Default in-memory storage.
+
+```js
+guardx();
+```
 
 ---
 
-## License
+## RedisStore
+
+Distributed storage for production deployments.
+
+```js
+const client = createClient();
+
+await client.connect();
+
+guardx({
+    store: new RedisStore(client)
+});
+```
+
+---
+
+# Roadmap
+
+- ✅ Fixed Window
+- ✅ Memory Store
+- ✅ Redis Store
+- ✅ Standard Headers
+- ✅ Retry-After Header
+- ✅ Custom Handler
+- 🔜 Sliding Window
+- 🔜 Token Bucket
+- 🔜 Additional Algorithms
+
+---
+
+# License
 
 MIT
