@@ -9,13 +9,10 @@ app.use(
         windowMs: 60000,
         standardHeaders: true,
 
-        handler(req, res, info) {
+        handler(req, res) {
             return res.status(429).json({
                 success: false,
-                message: "Too many requests",
-                retryAfter: info.retryAfter,
-                remaining: info.remaining,
-                limit: info.limit
+                message: "Limit Exeed",
             });
         }
     })
