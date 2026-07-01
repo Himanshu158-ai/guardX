@@ -8,7 +8,7 @@ test("Should return default options", (assert) => {
 
     assert.equal(config.limit, 100);
     assert.equal(config.windowMs, 60000);
-    assert.equal(config.headers, true);
+    assert.equal(config.standardHeaders, true);
     assert.equal(config.message, "Too many requests.");
 
 });
@@ -22,7 +22,7 @@ test("Should override default options", (assert) => {
 
     assert.equal(config.limit, 5);
     assert.equal(config.windowMs, 5000);
-    assert.equal(config.headers, true);
+    assert.equal(config.standardHeaders, true);
     assert.equal(config.message, "Too many requests.");
 
 });
@@ -127,6 +127,31 @@ test("Should reject decimal limit", (assert) => {
 
         validateOptions({
             limit: 2.5
+        });
+
+    });
+
+});
+
+test("Should accept valid handler", (assert) => {
+
+    const handler = () => {};
+
+    const config = validateOptions({
+        handler
+    });
+
+    assert.equal(config.handler, handler);
+
+});
+
+
+test("Should reject invalid handler", (assert) => {
+
+    assert.throws(() => {
+
+        validateOptions({
+            handler: "hello"
         });
 
     });

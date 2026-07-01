@@ -4,7 +4,8 @@ import GuardXError from "../errors/GuardXError.js";
 const ALLOWED_OPTIONS = new Set([
     "limit",
     "windowMs",
-    "headers",
+    "handler",
+    "standardHeaders",
     "message",
     "store"
 ]);
@@ -34,11 +35,13 @@ function validateOptions(options = {}) {
 
     validatePositiveInteger(config.windowMs, "windowMs");
 
-    validateBoolean(config.headers, "headers");
+    validateBoolean(config.standardHeaders, "standardHeaders");
 
     validateString(config.message, "message");
 
     validateStore(config.store);
+
+    validateFunction(config.handler, "handler");
 
     return config;
 
@@ -105,6 +108,20 @@ function validateStore(store) {
             );
 
         }
+
+    }
+
+}
+
+function validateFunction(value, field) {
+
+    if (value == null) return;
+
+    if (typeof value !== "function") {
+
+        throw new GuardXError(
+            `"${field}" must be a function.`
+        );
 
     }
 

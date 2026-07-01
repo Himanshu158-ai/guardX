@@ -7,6 +7,11 @@ function createResponse() {
     return {
         statusCode: null,
         body: null,
+        headers: {},
+
+        setHeader(name, value) {
+            this.headers[name] = value;
+        },
 
         status(code) {
             this.statusCode = code;
@@ -223,5 +228,109 @@ test("Should throw when client key cannot be determined", (assert) => {
         );
 
     });
+
+});
+
+
+test("Should set RateLimit headers", (assert) => {
+
+    const middleware = guardx({
+        limit: 5,
+        windowMs: 60000
+    });
+
+    const req = {
+        ip: "127.0.0.1",
+        headers: {}
+    };
+
+    const res = createResponse();
+
+    middleware(req, res, () => {});
+
+    assert.equal(res.headers["RateLimit-Limit"], 5);
+
+});
+
+test("Should send Retry-After header when blocked", (assert) => {
+
+    const middleware = guardx({
+        limit: 1,
+        windowMs: 60000
+    });
+
+    const req = {
+        ip: "127.0.0.1",
+        headers: {}
+    };
+
+    middleware(req, createResponse(), () => {});
+
+    const res = createResponse();
+
+    middleware(req, res, () => {});
+
+    assert.equal(typeof res.headers["Retry-After"], "number");
+
+});
+
+
+test("Should call custom handler when blocked", (assert) => {
+
+    let called = false;
+
+    const middleware = guardx({
+        limit: 1,
+        windowMs: 60000,
+        handler(req, res, info) {
+            called = true;
+            res.status(429).json({
+                custom: true
+            });
+        }
+    });
+
+    const req = {
+        ip: "127.0.0.1",
+        headers: {}
+    };
+
+    middleware(req, createResponse(), () => {});
+
+    const res = createResponse();
+
+    middleware(req, res, () => {});
+
+    assert.equal(called, true);
+    assert.equal(res.body.custom, true);
+
+});
+
+
+test("Should pass retry info to custom handler", (assert) => {
+
+    let receivedInfo;
+
+    const middleware = guardx({
+        limit: 1,
+        windowMs: 60000,
+
+        handler(req, res, info) {
+            receivedInfo = info;
+            res.status(429).json({});
+        }
+    });
+
+    const req = {
+        ip: "127.0.0.1",
+        headers: {}
+    };
+
+    middleware(req, createResponse(), () => {});
+
+    middleware(req, createResponse(), () => {});
+
+    assert.equal(typeof receivedInfo.retryAfter, "number");
+    assert.equal(receivedInfo.remaining, 0);
 
 });
