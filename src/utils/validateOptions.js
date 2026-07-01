@@ -86,7 +86,6 @@ function validateString(value, field) {
 
 }
 
-
 function validateStore(store) {
 
     if (store == null) return;
@@ -94,7 +93,7 @@ function validateStore(store) {
     const requiredMethods = [
         "get",
         "set",
-        "has",
+        // "has",
         "delete",
         "clear"
     ];

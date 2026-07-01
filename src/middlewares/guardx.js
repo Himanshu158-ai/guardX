@@ -9,11 +9,11 @@ function guardx(options = {}) {
 
     const store = config.store ?? new MemoryStore();
 
-    return (req, res, next) => {
+    return async (req, res, next) => {
 
         const key = getClientKey(req);
 
-        const result = fixedWindow({
+        const result = await fixedWindow({
             store,
             key,
             limit: config.limit,
